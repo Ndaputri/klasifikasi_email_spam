@@ -1,0 +1,27 @@
+{
+    "model": "Support Vector Machine (LinearSVC)",
+    "timestamp": "20260406_184838",
+    "metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 0.9960000000000001,
+        "cv_std": 0.0018371173070873806
+    },
+    "vectorizer_params": {
+        "max_features": 10000,
+        "min_df": 5,
+        "max_df": 0.95,
+        "ngram_range": [
+            1,
+            2
+        ]
+    },
+    "training_data_info": {
+        "total_samples": 5000,
+        "train_samples": 4000,
+        "test_samples": 1000,
+        "num_features": 10000
+    }
+}

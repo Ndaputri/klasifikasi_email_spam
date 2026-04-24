@@ -1,0 +1,61 @@
+{
+    "best_model_name": "SVM (LinearSVC)",
+    "timestamp": "20260204_123125",
+    "metrics": {
+        "accuracy": 0.9824355971896955,
+        "precision": 0.9730886850152906,
+        "recall": 0.9854444100340662,
+        "f1_score": 0.979227573472842,
+        "cv_mean": 0.984645963348056,
+        "cv_std": 0.0008993941832127539
+    },
+    "vectorizer_params": {
+        "max_features": 10000,
+        "min_df": 5,
+        "max_df": 0.95,
+        "ngram_range": [
+            1,
+            2
+        ]
+    },
+    "training_data_info": {
+        "total_samples": 38427,
+        "train_samples": 30741,
+        "test_samples": 7686,
+        "num_features": 10000
+    },
+    "all_model_results": {
+        "Naive Bayes": {
+            "accuracy": 0.9731980223783503,
+            "precision": 0.968101579436358,
+            "recall": 0.968101579436358,
+            "f1_score": 0.968101579436358,
+            "cv_mean": 0.973976107111481,
+            "cv_std": 0.001150494692080232
+        },
+        "Logistic Regression": {
+            "accuracy": 0.9795732500650534,
+            "precision": 0.9711656441717792,
+            "recall": 0.9804893155775782,
+            "f1_score": 0.9758052088149175,
+            "cv_mean": 0.9823688899803651,
+            "cv_std": 0.0013815190365592965
+        },
+        "Random Forest": {
+            "accuracy": 0.9718969555035128,
+            "precision": 0.9558245083207262,
+            "recall": 0.9783214617528647,
+            "f1_score": 0.9669421487603306,
+            "cv_mean": 0.971731644004722,
+            "cv_std": 0.002005163304231637
+        },
+        "SVM (LinearSVC)": {
+            "accuracy": 0.9824355971896955,
+            "precision": 0.9730886850152906,
+            "recall": 0.9854444100340662,
+            "f1_score": 0.979227573472842,
+            "cv_mean": 0.984645963348056,
+            "cv_std": 0.0008993941832127539
+        }
+    }
+}
