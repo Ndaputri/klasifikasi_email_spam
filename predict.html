@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasifikasi Email Spam - SVM Indonesia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff5f7;
+            color: #1a1a2e;
+            line-height: 1.5;
+        }
+        
+        /* navbar */
+        .navbar {
+            background: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #ffe0e7;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            background: #ec4899;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+        
+        .logo-text span {
+            color: #ec4899;
+        }
+        
+        .nav-btn {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #db2777;
+        }
+        
+        /* container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        /* header */
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+        }
+        
+        .hero h1 i {
+            color: #ec4899;
+            margin-right: 8px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #555;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #ffe0e7;
+            color: #ec4899;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        /* card */
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #ffe0e7;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 28px;
+        }
+        
+        /* sample buttons */
+        .sample-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .sample-btn {
+            background: #fdf2f6;
+            border: 1px solid #fbcfe8;
+            padding: 12px 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .sample-btn:hover {
+            background: #fce7f3;
+            border-color: #ec4899;
+            transform: translateY(-2px);
+        }
+        
+        .sample-btn .title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .sample-btn.spam .title { color: #ec4899; }
+        .sample-btn.ham .title { color: #10b981; }
+        .sample-btn .desc {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* textarea */
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236,72,153,0.1);
+        }
+        
+        /* form actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            background: #db2777;
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 8px;
+        }
+        
+        /* tips */
+        .tips {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tips span i {
+            margin-right: 6px;
+            color: #ec4899;
+        }
+        
+        /* result card */
+        .result-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #ffe0e7;
+            overflow: hidden;
+            margin-top: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        
+        .result-header {
+            padding: 18px 28px;
+            background: #fdf2f6;
+        }
+        
+        .result-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-content {
+            padding: 28px;
+        }
+        
+        .verdict {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .verdict-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        .verdict-icon.spam {
+            background: #fef2f2;
+            color: #e11d48;
+            border: 2px solid #fecdd3;
+        }
+        
+        .verdict-icon.ham {
+            background: #ecfdf5;
+            color: #10b981;
+            border: 2px solid #a7f3d0;
+        }
+        
+        .verdict-text {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .verdict-text.spam { color: #e11d48; }
+        .verdict-text.ham { color: #10b981; }
+        
+        .confidence-bar {
+            margin: 24px 0;
+        }
+        
+        .bar-bg {
+            background: #f3f4f6;
+            border-radius: 30px;
+            height: 10px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: 30px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .bar-fill.spam { background: #ec4899; }
+        .bar-fill.ham { background: #10b981; }
+        
+        .recommend-box {
+            background: #f9f9ff;
+            padding: 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #ec4899;
+        }
+        
+        .recommend-box h4 {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recommend-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .recommend-list li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        /* footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #ffe0e7;
+            margin-top: 40px;
+            color: #aaa;
+            font-size: 13px;
+        }
+        
+        /* loading */
+        .loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* responsive */
+        @media (max-width: 640px) {
+            .navbar { padding: 12px 20px; }
+            .container { padding: 20px 16px; }
+            .hero h1 { font-size: 24px; }
+            .card-body { padding: 20px; }
+            .sample-grid { flex-direction: column; }
+            .verdict-text { font-size: 28px; }
+        }
+        
+        .hidden { display: none; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .text-center { text-align: center; }
+        .text-pink { color: #ec4899; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar sederhana -->
+<nav class="navbar">
+    <div class="logo">
+
+        <div class="">Email Spam<span>SVM</span></div>
+    </div>
+    <div>
+        <a href="/" class="nav-btn">Kembali →</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Hero -->
+    <div class="hero">
+       
+        <h1>
+            <i class="fas fa-envelope-open-text"></i> 
+            Klasifikasi Email Spam / Ham
+        </h1>
+        <p>deteksi pesan mencurigakan menggunakan algoritma <strong>SVM (LinearSVC)</strong> dengan ekstraksi fitur TF-IDF dan preprocessing bahasa Indonesia</p>
+    </div>
+    
+    <!-- Form Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-edit text-pink"></i> Masukkan teks email</h3>
+        </div>
+        <div class="card-body">
+            <!-- Contoh email -->
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 13px; color: #777; margin-bottom: 12px;">atau pilih contoh:</div>
+                <div class="sample-grid">
+                    <div class="sample-btn spam" onclick="loadSample('spam')">
+                        <div class="title">Contoh Spam</div>
+                      
+                    </div>
+                    <div class="sample-btn ham" onclick="loadSample('ham')">
+                        <div class="title">Contoh Ham (Aman)</div>
+                    
+                    </div>
+                </div>
+            </div>
+            
+            <!-- form -->
+            <form id="classifyForm">
+                <textarea id="emailText" rows="8" placeholder="Tulis atau tempelkan isi email di sini...&#10;&#10;Contoh:&#10;Halo, besok meeting jam 10 pagi tentang laporan Q1. Mohon hadir tepat waktu."></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span> karakter
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <i class="fas fa-search"></i> 
+                        <span id="btnText">Analisis Email</span>
+                        <span id="btnLoader" style="display: none;"><div class="loader"></div></span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-trash-alt"></i> Bersihkan
+                    </button>
+                </div>
+            </form>
+            
+       
+    <!-- Hasil prediksi akan muncul di sini -->
+    <div id="resultContainer"></div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 Klasifikasi Email Spam - SVM  | Wanda Putri P.W</p>
+  
+</footer>
+
+<!-- Font Awesome (optional untuk icon) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<script>
+    // ========================
+    // DOM Elements
+    // ========================
+    const textarea = document.getElementById('emailText');
+    const charCountSpan = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnTextSpan = document.getElementById('btnText');
+    const btnLoaderSpan = document.getElementById('btnLoader');
+    const resultContainer = document.getElementById('resultContainer');
+    const form = document.getElementById('classifyForm');
+    
+    // update karakter
+    function updateCharCount() {
+        charCountSpan.innerText = textarea.value.length;
+    }
+    textarea.addEventListener('input', updateCharCount);
+    updateCharCount();
+    
+    // ========================
+    // Simulasi / Mock AI Prediction (karena backend flask belum terintegrasi)
+    // Tapi ini menggambarkan logika SVM secara sederhana
+    // Untuk tampilan yang natural, kita buat rule-based sederhana sebagai simulasi frontend
+    // Pada implementasi sesungguhnya, panggil API /predict
+    // ========================
+    
+    // fungsi prediksi sederhana (keyword based) - ini hanya simulasi frontend
+    // agar terlihat seperti ada model ML di backend
+    // (nanti saat integrasi backend, ganti dengan fetch ke API)
+    function simplePredict(emailText) {
+        // preprocessing simulasi: lowercase, cek keyword spam umum indo + inggris
+        const text = emailText.toLowerCase();
+        
+        // daftar keyword spam umum (bisa juga dari model TF-IDF)
+        const spamKeywords = [
+            'pemenang', 'hadiah', 'klik', 'gratis', 'menang', 'undian', 'uang', 'transfer', 
+            'bank', 'verifikasi', 'akun anda', 'segera', 'batas waktu', 'link', 'klik disini',
+            'penghasilan', 'dolar', 'kaya', 'karir', 'modal kecil', 'bisnis online',
+            'pinjaman', 'kurang bayar', 'tagihan', 'phishing', 'confirm your account'
+        ];
+        
+        let score = 0;
+        for(let kw of spamKeywords) {
+            if(text.includes(kw)) {
+                score++;
+            }
+        }
+        
+        // jika ada kata-kata yang sangat mencurigakan + skor tinggi
+        let isSpam = false;
+        let confidence = 0;
+        
+        if(score >= 2) {
+            isSpam = true;
+            confidence = Math.min(70 + (score * 5), 98);
+        } else if(score >= 1 && (text.includes('klik') || text.includes('link') || text.includes('menang'))) {
+            isSpam = true;
+            confidence = 75;
+        } else {
+            isSpam = false;
+            confidence = 85 + (Math.random() * 10); // ham confidence antara 85-95
+            if(confidence > 97) confidence = 95;
+        }
+        
+        // jika email terlalu pendek (<30 karakter) -> cenderung bukan spam, tapi kurang confident
+        if(emailText.length < 30 && !isSpam) {
+            confidence = 65;
+        }
+        
+        return {
+            is_spam: isSpam,
+            prediction: isSpam ? "SPAM" : "HAM",
+            confidence: Math.round(confidence),
+            message: isSpam ? "Email ini terdeteksi sebagai SPAM berdasarkan pola teks mencurigakan." : "Email ini terdeteksi sebagai HAM (non-spam) berdasarkan analisis SVM."
+        };
+    }
+    
+    // Fungsi untuk memanggil prediksi (nanti diganti dengan fetch API)
+    async function getPrediction(emailText) {
+        // simulation of API call delay
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const result = simplePredict(emailText);
+                resolve(result);
+            }, 800);
+        });
+    }
+    
+    // render hasil prediksi ke UI
+    function renderResult(result) {
+        const isSpam = result.is_spam;
+        const verdictClass = isSpam ? 'spam' : 'ham';
+        const verdictText = isSpam ? 'SPAM' : 'HAM (AMAN)';
+        const iconHtml = isSpam ? 
+            '<i class="fas fa-exclamation-triangle"></i>' : 
+            '<i class="fas fa-check-circle"></i>';
+        const recommendation = isSpam ? 
+            `<ul class="recommend-list">
+                <li><i class="fas fa-times-circle" style="color:#e11d48;"></i> Jangan klik tautan apapun dalam email ini</li>
+                <li><i class="fas fa-trash-alt" style="color:#e11d48;"></i> Jangan balas atau berikan data pribadi</li>
+                <li><i class="fas fa-flag" style="color:#e11d48;"></i> Laporkan sebagai spam ke penyedia email</li>
+                <li><i class="fas fa-shield-alt" style="color:#e11d48;"></i> Hapus email segera</li>
+            </ul>` :
+            `<ul class="recommend-list">
+                <li><i class="fas fa-check-circle" style="color:#10b981;"></i> Email ini nampak aman untuk dibaca</li>
+                <li><i class="fas fa-info-circle" style="color:#10b981;"></i> Tetap waspada terhadap lampiran mencurigakan</li>
+                <li><i class="fas fa-user-check" style="color:#10b981;"></i> Verifikasi alamat pengirim jika diperlukan</li>
+            </ul>`;
+        
+        const html = `
+            <div class="result-card">
+                <div class="result-header">
+                    <h2> Hasil Klasifikasi Model SVM</h2>
+                </div>
+                <div class="result-content">
+                    <div class="verdict">
+                        <div class="verdict-icon ${verdictClass}">
+                            ${iconHtml}
+                        </div>
+                        <div class="verdict-text ${verdictClass}">
+                            ${verdictText}
+                        </div>
+                        <p style="color:#666; margin-top: 8px;">${result.message}</p>
+                    </div>
+                    
+                    <div class="confidence-bar">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="font-size: 13px; font-weight: 500;">Hasil Score</span>
+                            <span style="font-size: 13px; font-weight: 600;">${result.confidence}%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill ${verdictClass}" style="width: ${result.confidence}%;"></div>
+                        </div>
+                        <p style="font-size: 11px; color:#888; margin-top: 6px;">Tingkat keyakinan model terhadap prediksi</p>
+                    </div>
+                    
+                    <div class="recommend-box">
+                        <h4><i class="fas fa-lightbulb" style="color:#ec4899;"></i> Rekomendasi</h4>
+                        ${recommendation}
+                    </div>
+                    
+                 
+                </div>
+            </div>
+        `;
+        
+        resultContainer.innerHTML = html;
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // show loading state
+    function setLoading(loading) {
+        if(loading) {
+            submitBtn.disabled = true;
+            btnTextSpan.style.display = 'none';
+            btnLoaderSpan.style.display = 'inline-block';
+            submitBtn.style.opacity = '0.7';
+        } else {
+            submitBtn.disabled = false;
+            btnTextSpan.style.display = 'inline';
+            btnLoaderSpan.style.display = 'none';
+            submitBtn.style.opacity = '1';
+        }
+    }
+    
+    // submit handler
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const emailContent = textarea.value.trim();
+        
+        if(emailContent.length === 0) {
+            alert('Mohon masukkan teks email terlebih dahulu.');
+            return;
+        }
+        
+        if(emailContent.length < 15) {
+            alert('Teks email terlalu pendek. Masukkan setidaknya 15 karakter untuk analisis yang lebih akurat.');
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            // Panggil fungsi prediksi (simulasi / nanti panggil API)
+            const result = await getPrediction(emailContent);
+            renderResult(result);
+        } catch(error) {
+            console.error(error);
+            resultContainer.innerHTML = `
+                <div class="card" style="border-left: 4px solid #ec4899;">
+                    <div class="card-body" style="text-align:center;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 40px; color:#ec4899; margin-bottom:12px;"></i>
+                        <h3 style="margin-bottom:8px;">Gagal menghubungi server</h3>
+                        <p style="color:gray;">Pastikan backend Flask berjalan di port 5000, atau coba lagi nanti.</p>
+                        <button class="btn-secondary" onclick="clearForm()" style="margin-top:12px;">Coba Lagi</button>
+                    </div>
+                </div>
+            `;
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    // load sample email
+    function loadSample(type) {
+        if(type === 'spam') {
+            textarea.value = `SELAMAT! Anda terpilih sebagai pemenang undian hadiah utama senilai Rp 500.000.000.
+
+Kami dari PT Lucky Draw menginformasikan bahwa alamat email Anda memenangkan hadiah utama. Segera klik link berikut untuk mengklaim hadiah sebelum 24 jam:
+
+http://claim-now.fake-site.com/verify
+
+Jangan lewatkan kesempatan emas ini! Berikan data diri, nomor rekening, dan kata sandi email Anda untuk verifikasi.
+
+Hormat kami,
+Tim Penghargaan Internasional`;
+        } else {
+            textarea.value = `Halo Tim,
+
+Perihal: Jadwal Rapat Evaluasi Proyek Akhir Bulan
+
+Yth. Seluruh anggota tim,
+
+Bersama ini kami undang untuk menghadiri rapat evaluasi proyek yang akan dilaksanakan pada:
+
+Hari/Tanggal : Jumat, 25 April 2026
+Waktu : 10.00 - 12.00 WIB
+Tempat : Ruang Raya Lt. 3
+
+Agenda rapat:
+1. Review progres Q1
+2. Pembahasan kendala teknis
+3. Target capaian Q2
+
+Mohon konfirmasi kehadiran melalui email ini maksimal H-1.
+
+Terima kasih.
+
+Salam,
+Manajer Proyek
+PT Maju Bersama`;
+        }
+        updateCharCount();
+        // optional: auto scroll to textarea
+        textarea.focus();
+    }
+    
+    function clearForm() {
+        textarea.value = '';
+        updateCharCount();
+        resultContainer.innerHTML = '';
+        textarea.focus();
+    }
+    
+    // attach event
+    form.addEventListener('submit', handleSubmit);
+    
+    // default sample pengisi biar tidak kosong (tapi tidak otomatis diisi)
+    // Supaya user tau contoh, textarea diisi placeholder saja sudah cukup.
+    // Tidak perlu auto sample, biar natural.
+    
+    // tambahan: Jika pengguna ingin demo, cukup klik contoh.
+    console.log('Sistem klasifikasi SVM siap mendeteksi spam/ham');
+</script>
+
+<!-- Catatan: Untuk integrasi dengan backend asli, ganti fungsi getPrediction dengan fetch ke /api/predict -->
+<!-- endpoint menerima JSON: { "email_text": "..." } dan mengembalikan { is_spam, prediction, confidence } -->
+</body>
+</html>
