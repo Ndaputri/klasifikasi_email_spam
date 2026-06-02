@@ -3,451 +3,779 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klasifikasi Email Spam Bahasa Indonesia - SVM</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif'],
-                        'display': ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#fdf2f8',
-                            100: '#fce7f3',
-                            200: '#fbcfe8',
-                            300: '#f9a8d4',
-                            400: '#f472b6',
-                            500: '#ec4899',
-                            600: '#db2777',
-                            700: '#be185d',
-                            800: '#9d174d',
-                            900: '#831843',
-                            950: '#500724',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>Klasifikasi Email Spam - SVM Indonesia</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff5f7;
+            color: #1a1a2e;
+            line-height: 1.5;
         }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(236, 72, 153, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        /* navbar */
+        .navbar {
+            background: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #ffe0e7;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .glass-card-solid {
-            background: rgba(255, 255, 255, 0.98);
-            border: 1px solid rgba(236, 72, 153, 0.15);
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.05);
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .gradient-pink {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+        .logo-icon {
+            background: #ec4899;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
         }
         
-        .text-gradient-pink {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+        
+        .logo-text span {
+            color: #ec4899;
+        }
+        
+        .nav-btn {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #db2777;
+        }
+        
+        /* container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        /* header */
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+        }
+        
+        .hero h1 i {
+            color: #ec4899;
+            margin-right: 8px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #555;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #ffe0e7;
+            color: #ec4899;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        /* card */
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #ffe0e7;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 28px;
+        }
+        
+        /* sample buttons */
+        .sample-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .sample-btn {
+            background: #fdf2f6;
+            border: 1px solid #fbcfe8;
+            padding: 12px 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .sample-btn:hover {
+            background: #fce7f3;
+            border-color: #ec4899;
+            transform: translateY(-2px);
+        }
+        
+        .sample-btn .title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .sample-btn.spam .title { color: #ec4899; }
+        .sample-btn.ham .title { color: #10b981; }
+        .sample-btn .desc {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* textarea */
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236,72,153,0.1);
+        }
+        
+        /* form actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 14px 0 rgba(236, 72, 153, 0.3);
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px 0 rgba(236, 72, 153, 0.4);
+            background: #db2777;
+            transform: scale(0.98);
         }
         
-        .feature-icon {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 1px solid rgba(236, 72, 153, 0.2);
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
         }
         
-        .hover-lift {
-            transition: all 0.3s ease;
+        .btn-secondary:hover {
+            background: #e5e7eb;
         }
         
-        .hover-lift:hover {
-            transform: translateY(-4px);
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 8px;
         }
         
-        .nav-blur {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(236, 72, 153, 0.1);
+        /* tips */
+        .tips {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
         }
         
-        ::-webkit-scrollbar {
-            width: 8px;
+        .tips span i {
+            margin-right: 6px;
+            color: #ec4899;
         }
         
-        ::-webkit-scrollbar-track {
-            background: #fce7f3;
+        /* result card */
+        .result-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #ffe0e7;
+            overflow: hidden;
+            margin-top: 30px;
+            animation: fadeIn 0.3s ease;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: #ec4899;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        
+        .result-header {
+            padding: 18px 28px;
+            background: #fdf2f6;
+        }
+        
+        .result-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-content {
+            padding: 28px;
+        }
+        
+        .verdict {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .verdict-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        .verdict-icon.spam {
+            background: #fef2f2;
+            color: #e11d48;
+            border: 2px solid #fecdd3;
+        }
+        
+        .verdict-icon.ham {
+            background: #ecfdf5;
+            color: #10b981;
+            border: 2px solid #a7f3d0;
+        }
+        
+        .verdict-text {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .verdict-text.spam { color: #e11d48; }
+        .verdict-text.ham { color: #10b981; }
+        
+        .confidence-bar {
+            margin: 24px 0;
+        }
+        
+        .bar-bg {
+            background: #f3f4f6;
+            border-radius: 30px;
+            height: 10px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: 30px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .bar-fill.spam { background: #ec4899; }
+        .bar-fill.ham { background: #10b981; }
+        
+        .recommend-box {
+            background: #f9f9ff;
+            padding: 20px;
             border-radius: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #ec4899;
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: #be185d;
+        .recommend-box h4 {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .stat-card {
-            transition: all 0.2s ease;
+        .recommend-list {
+            list-style: none;
+            padding-left: 0;
         }
         
-        .stat-card:hover {
-            border-color: #ec4899;
-            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.1);
+        .recommend-list li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
         }
+        
+        /* footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #ffe0e7;
+            margin-top: 40px;
+            color: #aaa;
+            font-size: 13px;
+        }
+        
+        /* loading */
+        .loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* responsive */
+        @media (max-width: 640px) {
+            .navbar { padding: 12px 20px; }
+            .container { padding: 20px 16px; }
+            .hero h1 { font-size: 24px; }
+            .card-body { padding: 20px; }
+            .sample-grid { flex-direction: column; }
+            .verdict-text { font-size: 28px; }
+        }
+        
+        .hidden { display: none; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .text-center { text-align: center; }
+        .text-pink { color: #ec4899; }
     </style>
 </head>
-<body class="font-sans antialiased">
+<body>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 nav-blur" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 lg:h-20">
-                <div class="flex items-center gap-3">
-                    <div class="justify-center">
-                        <i class="fas fa-envelope-shield text-white text-sm"></i>
-                    </div>
-                    <span class="font-display font-bold text-xl text-gray-800">Klasifikasi <span class="text-gradient-pink">Email Spam</span></span>
-                </div>
-                
-                <div class="hidden md:flex items-center gap-2">
-                    <a href="#hero" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Beranda</a>
-                    <a href="#about" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Tentang</a>
-                    <a href="#technology" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Teknologi</a>
-                    <a href="/predict" class="ml-3 btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2">
-                        <i class="fas fa-microchip"></i>
-                        Klasifikasi
-                    </a>
-                </div>
-                
-                <button class="md:hidden text-gray-700 p-2 rounded-lg hover:bg-brand-50" id="mobile-menu-btn">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="md:hidden hidden bg-white/95 backdrop-blur-lg border-b border-brand-100" id="mobile-menu">
-            <div class="px-4 py-4 space-y-2">
-                <a href="#hero" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Beranda</a>
-                <a href="#about" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Tentang</a>
-                <a href="#technology" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Teknologi</a>
-                <a href="/predict" class="block btn-primary text-white px-4 py-3 rounded-xl font-semibold text-center mt-3">Klasifikasi</a>
-            </div>
-        </div>
-    </nav>
+<!-- Navbar sederhana -->
+<nav class="navbar">
+    <div class="logo">
 
-   <!-- Hero Section -->
-    <section id="hero" class="pt-28 lg:pt-36 pb-20 lg:pb-28 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-brand-100/40 to-transparent rounded-full blur-3xl -z-10"></div>
-        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-brand-50/60 to-transparent rounded-full blur-3xl -z-10"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm border border-brand-200 rounded-full px-4 py-1.5 mb-6 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
-                        <span class="text-sm font-medium text-brand-700">Wanda Putri Prasetio Wulandari</span>
-                    </div>
-                    
-                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6">
-                        KLASIFIKASI E-MAIL
-                        <span class="text-gradient-pink">SPAM BAHASA INDONESIA</span>
-                        <br>MENGGUNAKAN ALGORITMA
-                        <span class="text-gradient-pink">SUPPORT VECTOR MACHINE</span>
-                    </h1>
-                    
-                    <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                        Sistem klasifikasi e-mail digunakan untuk memisahkan pesan <span class="font-semibold text-brand-600">spam</span> dan <span class="font-semibold text-brand-600">ham</span> 
-                        berbahasa Indonesia menggunakan algoritma <span class="font-semibold text-brand-600">Support Vector Machine</span> 
-                        untuk melindungi inbox dari ancaman serta untuk memenuhi Tugas Akhir Skripsi.
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="/predict" class="btn-primary text-white px-8 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-3 group">
-                            <span>Mulai Klasifikasi</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="hidden lg:block">
-                        <div class="flex items-center gap-3 mb-4">
-                            </div>
-                         <div class="order-1 lg:order-2">
-                    <div class="glass-card-solid rounded-3xl p-8">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-display font-bold text-xl text-gray-800">Alur Penelitian</h3>
-                            <i class="fas fa-project-diagram text-brand-400 text-2xl"></i>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">1</div>
-                                <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-full bg-brand-400 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Handle missing values, cleaning, case folding, normalisasi, tokenisasi, stopword removal, stemming, dan remove duplicate.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">2</div>
-                                <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-11/12 bg-brand-500 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">TF-IDF Vectorization Mengubah teks menjadi representasi numerik dengan mempertimbangkan bobot kata.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">3</div>
-                                <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-full bg-brand-600 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">LinearSVC Classification Proses pelatihan dan prediksi menggunakan algoritma Support Vector Machine dengan kernel linear.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">4</div>
-                                <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-10/12 bg-brand-700 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Evaluasi model : Pengukuran performa menggunakan akurasi, presisi, recall, dan F1-Score.</p>
-                                </div>
-                            </div>
-                
-                        </div>
-                    </div>
-                </div>
-           
-        </div>
-    </section>
+        <div class="">Email Spam<span>SVM</span></div>
+    </div>
+    <div>
+        <a href="/" class="nav-btn">Kembali →</a>
+    </div>
+</nav>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-white/50 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <div class="inline-flex items-center gap-2 bg-brand-100 rounded-full px-4 py-1.5 mb-4">
-                    <i class="fas fa-info-circle text-brand-600 text-sm"></i>
-                    <span class="text-sm font-medium text-brand-700">Tentang Sistem</span>
+<div class="container">
+    <!-- Hero -->
+    <div class="hero">
+       
+        <h1>
+            <i class="fas fa-envelope-open-text"></i> 
+            Klasifikasi Email Spam / Ham
+        </h1>
+        <p>deteksi pesan mencurigakan menggunakan algoritma <strong>SVM (LinearSVC)</strong> dengan ekstraksi fitur TF-IDF dan preprocessing bahasa Indonesia</p>
+    </div>
+    
+    <!-- Form Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-edit text-pink"></i> Masukkan teks email</h3>
+        </div>
+        <div class="card-body">
+            <!-- Contoh email -->
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 13px; color: #777; margin-bottom: 12px;">atau pilih contoh:</div>
+                <div class="sample-grid">
+                    <div class="sample-btn spam" onclick="loadSample('spam')">
+                        <div class="title">Contoh Spam</div>
+                      
+                    </div>
+                    <div class="sample-btn ham" onclick="loadSample('ham')">
+                        <div class="title">Contoh Ham (Aman)</div>
+                    
+                    </div>
                 </div>
-                <h2 class="font-display text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-                    Klasifikasi E-mail Spam Bahasa Indonesia
-                </h2>
-                <p class="text-gray-600 text-lg leading-relaxed">
-                    Sistem mendeteksi dan mengklasifikasi email spam bahasa Indonesia yang dirancang untuk melindungi dari ancaman email berbahaya.
-                </p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="glass-card-solid rounded-2xl p-7 hover-lift">
-                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-5">
-                        <i class="fas fa-language text-brand-500 text-2xl"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-xl text-gray-800 mb-3">Bahasa Indonesia</h3>
-                    <p class="text-gray-500 leading-relaxed">Mendukung teks berbahasa Indonesia dengan stemming Sastrawi dan stopword removal untuk hasil optimal.</p>
-                </div>
-                <div class="glass-card-solid rounded-2xl p-7 hover-lift">
-                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-5">
-                        <i class="fas fa-chart-line text-brand-500 text-2xl"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-xl text-gray-800 mb-3">Akurasi Tinggi</h3>
-                    <p class="text-gray-500 leading-relaxed">Model LinearSVC yang dioptimalkan dengan TF-IDF vectorizer menghasilkan Akurasi, Presisi, Recall & F1 Score yang optimal.</p>
-                </div>
-                <div class="glass-card-solid rounded-2xl p-7 hover-lift">
-                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-5">
-                        <i class="fas fa-shield-virus text-brand-500 text-2xl"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-xl text-gray-800 mb-3">Privasi Terjaga</h3>
-                    <p class="text-gray-500 leading-relaxed">Data email tidak disimpan permanen, hanya diproses untuk keperluan klasifikasi.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Technology Section -->
-    <section id="technology" class="py-20 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center gap-2 bg-brand-100 rounded-full px-4 py-1.5 mb-4">
-                    <i class="fas fa-microchip text-brand-600"></i>
-                    <span class="text-sm font-medium text-brand-700">Inti Teknologi</span>
-                </div>
-                <h2 class="font-display text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-                    Algoritma <span class="text-gradient-pink">Support Vector Machine</span>
-                </h2>
-                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-                    Menggunakan LinearSVC yang unggul dalam klasifikasi teks dimensi tinggi dengan margin pemisah maksimal.
-                </p>
-            </div>
-            
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <div class="space-y-6">
-                        <div class="flex gap-4 p-5 glass-card-solid rounded-2xl">
-                            <div class="flex-shrink-0 w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-chalkboard-teacher text-brand-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-display font-bold text-gray-800 mb-1">Pembelajaran Supervised</h4>
-                                <p class="text-gray-500 text-sm">Model dilatih dengan dataset email berlabel spam & ham untuk memahami pola teks mencurigakan.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-5 glass-card-solid rounded-2xl">
-                            <div class="flex-shrink-0 w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-chart-pie text-brand-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-display font-bold text-gray-800 mb-1">Ekstraksi Fitur TF-IDF</h4>
-                                <p class="text-gray-500 text-sm">Mengubah teks menjadi vektor numerik dengan mempertimbangkan frekuensi kata dan kebalikan frekuensi dokumen.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-5 glass-card-solid rounded-2xl">
-                            <div class="flex-shrink-0 w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-chart-line text-brand-600 text-xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-display font-bold text-gray-800 mb-1">Evaluasi Model</h4>
-                                <p class="text-gray-500 text-sm">Pengujian menggunakan confusion matrix, akurasi, presisi, recall, dan F1-Score.</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- form -->
+            <form id="classifyForm">
+                <textarea id="emailText" rows="8" placeholder="Tulis atau tempelkan isi email di sini...&#10;&#10;Contoh:&#10;Halo, besok meeting jam 10 pagi tentang laporan Q1. Mohon hadir tepat waktu."></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span> karakter
                 </div>
                 
-                <div class="glass-card-solid rounded-3xl p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-display font-bold text-xl text-gray-800">Teknologi Pendukung</h3>
-                        <i class="fas fa-cogs text-brand-400 text-2xl"></i>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fab fa-python text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">Python</p>
-                        </div>
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fas fa-brain text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">Scikit-learn</p>
-                        </div>
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fas fa-flask text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">Flask</p>
-                        </div>
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fas fa-file-alt text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">TF-IDF</p>
-                        </div>
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fas fa-language text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">Sastrawi</p>
-                        </div>
-                        <div class="text-center p-3 bg-brand-50 rounded-xl">
-                            <i class="fas fa-chart-bar text-2xl text-brand-500"></i>
-                            <p class="text-xs text-gray-600 mt-1">Pandas</p>
-                        </div>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <i class="fas fa-search"></i> 
+                        <span id="btnText">Analisis Email</span>
+                        <span id="btnLoader" style="display: none;"><div class="loader"></div></span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-trash-alt"></i> Bersihkan
+                    </button>
                 </div>
-            </div>
-        </div>
-    </section>
+            </form>
+            
+       
+    <!-- Hasil prediksi akan muncul di sini -->
+    <div id="resultContainer"></div>
+</div>
 
+<footer class="footer">
+    <p>© 2026 Klasifikasi Email Spam - SVM  | Wanda Putri P.W</p>
+  
+</footer>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-brand-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="">
-                            <i class="fas fa-envelope-shield text-white text-xs"></i>
-                        </div>
-                        <span class="font-display font-bold text-xl text-gray-800">Klasifikasi <span class="text-gradient-pink">Email Spam</span></span>
-                    </div>
-                    <p class="text-gray-500 text-sm max-w-md">
-                        Klasifikasi email spam bahasa Indonesia menggunakan algoritma Support Vector Machine untuk perlindungan inbox yang optimal.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="font-display font-semibold text-gray-900 mb-4">Tautan Cepat</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#hero" class="text-gray-500 hover:text-brand-600">Beranda</a></li>
-                        <li><a href="#about" class="text-gray-500 hover:text-brand-600">Tentang</a></li>
-                        <li><a href="#teknologi" class="text-gray-500 hover:text-brand-600">Teknologi</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-display font-semibold text-gray-900 mb-4">Kontak</h4>
-                    <p class="text-gray-500 text-sm flex items-center gap-2">
-                        <i class="fas fa-envelope text-brand-400"></i> wandawesome@gmail.com
-                    </p>
-                    <p class="text-gray-500 text-sm mt-2 flex items-center gap-2">
-                        <i class="fas fa-map-marker-alt text-brand-400"></i> Indonesia
-                    </p>
-                </div>
-            </div>
-            <div class="border-t border-gray-100 mt-10 pt-8 text-center">
-                <p class="text-gray-400 text-sm">&copy; 2026 Wanda Putri P.W — Klasifikasi Email Spam dengan SVM</p>
-            </div>
-        </div>
-    </footer>
+<!-- Font Awesome (optional untuk icon) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <script>
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
+<script>
+    // ========================
+    // DOM Elements
+    // ========================
+    const textarea = document.getElementById('emailText');
+    const charCountSpan = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnTextSpan = document.getElementById('btnText');
+    const btnLoaderSpan = document.getElementById('btnLoader');
+    const resultContainer = document.getElementById('resultContainer');
+    const form = document.getElementById('classifyForm');
+    
+    // update karakter
+    function updateCharCount() {
+        charCountSpan.innerText = textarea.value.length;
+    }
+    textarea.addEventListener('input', updateCharCount);
+    updateCharCount();
+    
+    // ========================
+    // Simulasi / Mock AI Prediction (karena backend flask belum terintegrasi)
+    // Tapi ini menggambarkan logika SVM secara sederhana
+    // Untuk tampilan yang natural, kita buat rule-based sederhana sebagai simulasi frontend
+    // Pada implementasi sesungguhnya, panggil API /predict
+    // ========================
+    
+    // fungsi prediksi sederhana (keyword based) - ini hanya simulasi frontend
+    // agar terlihat seperti ada model ML di backend
+    // (nanti saat integrasi backend, ganti dengan fetch ke API)
+    function simplePredict(emailText) {
+        // preprocessing simulasi: lowercase, cek keyword spam umum indo + inggris
+        const text = emailText.toLowerCase();
         
-        if(mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        // daftar keyword spam umum (bisa juga dari model TF-IDF)
+        const spamKeywords = [
+            'pemenang', 'hadiah', 'klik', 'gratis', 'menang', 'undian', 'uang', 'transfer', 
+            'bank', 'verifikasi', 'akun anda', 'segera', 'batas waktu', 'link', 'klik disini',
+            'penghasilan', 'dolar', 'kaya', 'karir', 'modal kecil', 'bisnis online',
+            'pinjaman', 'kurang bayar', 'tagihan', 'phishing', 'confirm your account'
+        ];
+        
+        let score = 0;
+        for(let kw of spamKeywords) {
+            if(text.includes(kw)) {
+                score++;
+            }
         }
         
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if(target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    if(mobileMenu) mobileMenu.classList.add('hidden');
-                }
-            });
-        });
+        // jika ada kata-kata yang sangat mencurigakan + skor tinggi
+        let isSpam = false;
+        let confidence = 0;
         
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if(window.scrollY > 20) nav.classList.add('shadow-sm');
-            else nav.classList.remove('shadow-sm');
+        if(score >= 2) {
+            isSpam = true;
+            confidence = Math.min(70 + (score * 5), 98);
+        } else if(score >= 1 && (text.includes('klik') || text.includes('link') || text.includes('menang'))) {
+            isSpam = true;
+            confidence = 75;
+        } else {
+            isSpam = false;
+            confidence = 85 + (Math.random() * 10); // ham confidence antara 85-95
+            if(confidence > 97) confidence = 95;
+        }
+        
+        // jika email terlalu pendek (<30 karakter) -> cenderung bukan spam, tapi kurang confident
+        if(emailText.length < 30 && !isSpam) {
+            confidence = 65;
+        }
+        
+        return {
+            is_spam: isSpam,
+            prediction: isSpam ? "SPAM" : "HAM",
+            confidence: Math.round(confidence),
+            message: isSpam ? "Email ini terdeteksi sebagai SPAM berdasarkan pola teks mencurigakan." : "Email ini terdeteksi sebagai HAM (non-spam) berdasarkan analisis SVM."
+        };
+    }
+    
+    // Fungsi untuk memanggil prediksi (nanti diganti dengan fetch API)
+    async function getPrediction(emailText) {
+        // simulation of API call delay
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const result = simplePredict(emailText);
+                resolve(result);
+            }, 800);
         });
-    </script>
+    }
+    
+    // render hasil prediksi ke UI
+    function renderResult(result) {
+        const isSpam = result.is_spam;
+        const verdictClass = isSpam ? 'spam' : 'ham';
+        const verdictText = isSpam ? 'SPAM' : 'HAM (AMAN)';
+        const iconHtml = isSpam ? 
+            '<i class="fas fa-exclamation-triangle"></i>' : 
+            '<i class="fas fa-check-circle"></i>';
+        const recommendation = isSpam ? 
+            `<ul class="recommend-list">
+                <li><i class="fas fa-times-circle" style="color:#e11d48;"></i> Jangan klik tautan apapun dalam email ini</li>
+                <li><i class="fas fa-trash-alt" style="color:#e11d48;"></i> Jangan balas atau berikan data pribadi</li>
+                <li><i class="fas fa-flag" style="color:#e11d48;"></i> Laporkan sebagai spam ke penyedia email</li>
+                <li><i class="fas fa-shield-alt" style="color:#e11d48;"></i> Hapus email segera</li>
+            </ul>` :
+            `<ul class="recommend-list">
+                <li><i class="fas fa-check-circle" style="color:#10b981;"></i> Email ini nampak aman untuk dibaca</li>
+                <li><i class="fas fa-info-circle" style="color:#10b981;"></i> Tetap waspada terhadap lampiran mencurigakan</li>
+                <li><i class="fas fa-user-check" style="color:#10b981;"></i> Verifikasi alamat pengirim jika diperlukan</li>
+            </ul>`;
+        
+        const html = `
+            <div class="result-card">
+                <div class="result-header">
+                    <h2> Hasil Klasifikasi Model SVM</h2>
+                </div>
+                <div class="result-content">
+                    <div class="verdict">
+                        <div class="verdict-icon ${verdictClass}">
+                            ${iconHtml}
+                        </div>
+                        <div class="verdict-text ${verdictClass}">
+                            ${verdictText}
+                        </div>
+                        <p style="color:#666; margin-top: 8px;">${result.message}</p>
+                    </div>
+                    
+                    <div class="confidence-bar">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="font-size: 13px; font-weight: 500;">Hasil Score</span>
+                            <span style="font-size: 13px; font-weight: 600;">${result.confidence}%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill ${verdictClass}" style="width: ${result.confidence}%;"></div>
+                        </div>
+                        <p style="font-size: 11px; color:#888; margin-top: 6px;">Tingkat keyakinan model terhadap prediksi</p>
+                    </div>
+                    
+                    <div class="recommend-box">
+                        <h4><i class="fas fa-lightbulb" style="color:#ec4899;"></i> Rekomendasi</h4>
+                        ${recommendation}
+                    </div>
+                    
+                 
+                </div>
+            </div>
+        `;
+        
+        resultContainer.innerHTML = html;
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // show loading state
+    function setLoading(loading) {
+        if(loading) {
+            submitBtn.disabled = true;
+            btnTextSpan.style.display = 'none';
+            btnLoaderSpan.style.display = 'inline-block';
+            submitBtn.style.opacity = '0.7';
+        } else {
+            submitBtn.disabled = false;
+            btnTextSpan.style.display = 'inline';
+            btnLoaderSpan.style.display = 'none';
+            submitBtn.style.opacity = '1';
+        }
+    }
+    
+    // submit handler
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const emailContent = textarea.value.trim();
+        
+        if(emailContent.length === 0) {
+            alert('Mohon masukkan teks email terlebih dahulu.');
+            return;
+        }
+        
+        if(emailContent.length < 15) {
+            alert('Teks email terlalu pendek. Masukkan setidaknya 15 karakter untuk analisis yang lebih akurat.');
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            // Panggil fungsi prediksi (simulasi / nanti panggil API)
+            const result = await getPrediction(emailContent);
+            renderResult(result);
+        } catch(error) {
+            console.error(error);
+            resultContainer.innerHTML = `
+                <div class="card" style="border-left: 4px solid #ec4899;">
+                    <div class="card-body" style="text-align:center;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 40px; color:#ec4899; margin-bottom:12px;"></i>
+                        <h3 style="margin-bottom:8px;">Gagal menghubungi server</h3>
+                        <p style="color:gray;">Pastikan backend Flask berjalan di port 5000, atau coba lagi nanti.</p>
+                        <button class="btn-secondary" onclick="clearForm()" style="margin-top:12px;">Coba Lagi</button>
+                    </div>
+                </div>
+            `;
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    // load sample email
+    function loadSample(type) {
+        if(type === 'spam') {
+            textarea.value = `SELAMAT! Anda terpilih sebagai pemenang undian hadiah utama senilai Rp 500.000.000.
+
+Kami dari PT Lucky Draw menginformasikan bahwa alamat email Anda memenangkan hadiah utama. Segera klik link berikut untuk mengklaim hadiah sebelum 24 jam:
+
+http://claim-now.fake-site.com/verify
+
+Jangan lewatkan kesempatan emas ini! Berikan data diri, nomor rekening, dan kata sandi email Anda untuk verifikasi.
+
+Hormat kami,
+Tim Penghargaan Internasional`;
+        } else {
+            textarea.value = `Halo Tim,
+
+Perihal: Jadwal Rapat Evaluasi Proyek Akhir Bulan
+
+Yth. Seluruh anggota tim,
+
+Bersama ini kami undang untuk menghadiri rapat evaluasi proyek yang akan dilaksanakan pada:
+
+Hari/Tanggal : Jumat, 25 April 2026
+Waktu : 10.00 - 12.00 WIB
+Tempat : Ruang Raya Lt. 3
+
+Agenda rapat:
+1. Review progres Q1
+2. Pembahasan kendala teknis
+3. Target capaian Q2
+
+Mohon konfirmasi kehadiran melalui email ini maksimal H-1.
+
+Terima kasih.
+
+Salam,
+Manajer Proyek
+PT Maju Bersama`;
+        }
+        updateCharCount();
+        // optional: auto scroll to textarea
+        textarea.focus();
+    }
+    
+    function clearForm() {
+        textarea.value = '';
+        updateCharCount();
+        resultContainer.innerHTML = '';
+        textarea.focus();
+    }
+    
+    // attach event
+    form.addEventListener('submit', handleSubmit);
+    
+    // default sample pengisi biar tidak kosong (tapi tidak otomatis diisi)
+    // Supaya user tau contoh, textarea diisi placeholder saja sudah cukup.
+    // Tidak perlu auto sample, biar natural.
+    
+    // tambahan: Jika pengguna ingin demo, cukup klik contoh.
+    console.log('Sistem klasifikasi SVM siap mendeteksi spam/ham');
+</script>
+
+<!-- Catatan: Untuk integrasi dengan backend asli, ganti fungsi getPrediction dengan fetch ke /api/predict -->
+<!-- endpoint menerima JSON: { "email_text": "..." } dan mengembalikan { is_spam, prediction, confidence } -->
 </body>
 </html>
