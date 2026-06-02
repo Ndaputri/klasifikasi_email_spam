@@ -147,7 +147,7 @@
                     <a href="#hero" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Beranda</a>
                     <a href="#about" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Tentang</a>
                     <a href="#technology" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Teknologi</a>
-                    <a href="/predict" class="ml-3 btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2">
+                    <a href="/klasifikasi_email_spam/predict" class="ml-3 btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2">
                         <i class="fas fa-microchip"></i>
                         Klasifikasi
                     </a>
