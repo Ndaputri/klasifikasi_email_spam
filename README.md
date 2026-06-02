@@ -255,7 +255,7 @@
                 </div>
            
         </div>
-    </section>
+  
 
     <!-- About Section -->
     <section id="about" class="py-20 bg-white/50 relative">
@@ -449,5 +449,4 @@
             else nav.classList.remove('shadow-sm');
         });
     </script>
-</body>
-</html>
+
