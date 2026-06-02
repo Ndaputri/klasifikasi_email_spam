@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -27,17 +27,6 @@
                             700: '#be185d',
                             800: '#9d174d',
                             900: '#831843',
-                            950: '#500724',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' },
                         }
                     }
                 }
@@ -53,7 +42,6 @@
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(236, 72, 153, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
         }
         
         .glass-card-solid {
@@ -102,32 +90,6 @@
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(236, 72, 153, 0.1);
         }
-        
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #fce7f3;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #ec4899;
-            border-radius: 20px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #be185d;
-        }
-        
-        .stat-card {
-            transition: all 0.2s ease;
-        }
-        
-        .stat-card:hover {
-            border-color: #ec4899;
-            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.1);
-        }
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -137,7 +99,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 lg:h-20">
                 <div class="flex items-center gap-3">
-                    <div class="justify-center">
+                    <div class="w-8 h-8 gradient-pink rounded-xl flex items-center justify-center">
                         <i class="fas fa-envelope-shield text-white text-sm"></i>
                     </div>
                     <span class="font-display font-bold text-xl text-gray-800">Klasifikasi <span class="text-gradient-pink">Email Spam</span></span>
@@ -147,7 +109,7 @@
                     <a href="#hero" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Beranda</a>
                     <a href="#about" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Tentang</a>
                     <a href="#technology" class="px-4 py-2 text-gray-600 hover:text-brand-600 font-medium rounded-xl transition-all hover:bg-brand-50">Teknologi</a>
-                    <a href="/klasifikasi_email_spam/predict" class="ml-3 btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2">
+                    <a href="#" class="ml-3 btn-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2">
                         <i class="fas fa-microchip"></i>
                         Klasifikasi
                     </a>
@@ -164,12 +126,12 @@
                 <a href="#hero" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Beranda</a>
                 <a href="#about" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Tentang</a>
                 <a href="#technology" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Teknologi</a>
-                <a href="/klasifikasi_email_spam/predict" class="block btn-primary text-white px-4 py-3 rounded-xl font-semibold text-center mt-3">Klasifikasi</a>
+                <a href="#" class="block btn-primary text-white px-4 py-3 rounded-xl font-semibold text-center mt-3">Klasifikasi</a>
             </div>
         </div>
     </nav>
 
-   <!-- Hero Section -->
+    <!-- Hero Section -->
     <section id="hero" class="pt-28 lg:pt-36 pb-20 lg:pb-28 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-brand-100/40 to-transparent rounded-full blur-3xl -z-10"></div>
         <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-brand-50/60 to-transparent rounded-full blur-3xl -z-10"></div>
@@ -196,7 +158,7 @@
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="/klasifikasi_email_spam/predict" class="btn-primary text-white px-8 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-3 group">
+                        <a href="#" class="btn-primary text-white px-8 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-3 group">
                             <span>Mulai Klasifikasi</span>
                             <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                         </a>
@@ -204,9 +166,6 @@
                 </div>
                 
                 <div class="hidden lg:block">
-                        <div class="flex items-center gap-3 mb-4">
-                            </div>
-                         <div class="order-1 lg:order-2">
                     <div class="glass-card-solid rounded-3xl p-8">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="font-display font-bold text-xl text-gray-800">Alur Penelitian</h3>
@@ -216,46 +175,37 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">1</div>
                                 <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-full bg-brand-400 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Handle missing values, cleaning, case folding, normalisasi, tokenisasi, stopword removal, stemming, dan remove duplicate.</p>
+                                    <p class="text-sm text-gray-700 font-medium">Preprocessing Data</p>
+                                    <p class="text-xs text-gray-500">Handle missing values, cleaning, case folding, normalisasi, tokenisasi, stopword removal, stemming, dan remove duplicate.</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">2</div>
                                 <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-11/12 bg-brand-500 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">TF-IDF Vectorization Mengubah teks menjadi representasi numerik dengan mempertimbangkan bobot kata.</p>
+                                    <p class="text-sm text-gray-700 font-medium">TF-IDF Vectorization</p>
+                                    <p class="text-xs text-gray-500">Mengubah teks menjadi representasi numerik dengan mempertimbangkan bobot kata.</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">3</div>
                                 <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-full bg-brand-600 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">LinearSVC Classification Proses pelatihan dan prediksi menggunakan algoritma Support Vector Machine dengan kernel linear.</p>
+                                    <p class="text-sm text-gray-700 font-medium">LinearSVC Classification</p>
+                                    <p class="text-xs text-gray-500">Proses pelatihan dan prediksi menggunakan algoritma Support Vector Machine dengan kernel linear.</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold text-sm">4</div>
                                 <div class="flex-1">
-                                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full w-10/12 bg-brand-700 rounded-full"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Evaluasi model : Pengukuran performa menggunakan akurasi, presisi, recall, dan F1-Score.</p>
+                                    <p class="text-sm text-gray-700 font-medium">Evaluasi Model</p>
+                                    <p class="text-xs text-gray-500">Pengukuran performa menggunakan akurasi, presisi, recall, dan F1-Score.</p>
                                 </div>
                             </div>
-                
                         </div>
                     </div>
                 </div>
-           
+            </div>
         </div>
-  
+    </section>
 
     <!-- About Section -->
     <section id="about" class="py-20 bg-white/50 relative">
@@ -384,14 +334,13 @@
         </div>
     </section>
 
-
     <!-- Footer -->
     <footer class="bg-white border-t border-brand-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid md:grid-cols-4 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2 mb-4">
-                        <div class="">
+                        <div class="w-8 h-8 gradient-pink rounded-xl flex items-center justify-center">
                             <i class="fas fa-envelope-shield text-white text-xs"></i>
                         </div>
                         <span class="font-display font-bold text-xl text-gray-800">Klasifikasi <span class="text-gradient-pink">Email Spam</span></span>
@@ -405,7 +354,7 @@
                     <ul class="space-y-2 text-sm">
                         <li><a href="#hero" class="text-gray-500 hover:text-brand-600">Beranda</a></li>
                         <li><a href="#about" class="text-gray-500 hover:text-brand-600">Tentang</a></li>
-                        <li><a href="#teknologi" class="text-gray-500 hover:text-brand-600">Teknologi</a></li>
+                        <li><a href="#technology" class="text-gray-500 hover:text-brand-600">Teknologi</a></li>
                     </ul>
                 </div>
                 <div>
@@ -425,28 +374,39 @@
     </footer>
 
     <script>
+        // Mobile menu toggle
         const mobileBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         
         if(mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
         }
         
+        // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if(target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    if(mobileMenu) mobileMenu.classList.add('hidden');
+                    if(mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
                 }
             });
         });
         
+        // Navbar shadow on scroll
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
-            if(window.scrollY > 20) nav.classList.add('shadow-sm');
-            else nav.classList.remove('shadow-sm');
+            if(window.scrollY > 20) {
+                nav.classList.add('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-sm');
+            }
         });
     </script>
-
+</body>
+</html>
