@@ -164,7 +164,7 @@
                 <a href="#hero" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Beranda</a>
                 <a href="#about" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Tentang</a>
                 <a href="#technology" class="block px-4 py-3 text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl font-medium">Teknologi</a>
-                <a href="/klasifikasi_email_spam/predict)" class="block btn-primary text-white px-4 py-3 rounded-xl font-semibold text-center mt-3">Klasifikasi</a>
+                <a href="/klasifikasi_email_spam/predict" class="block btn-primary text-white px-4 py-3 rounded-xl font-semibold text-center mt-3">Klasifikasi</a>
             </div>
         </div>
     </nav>
@@ -196,7 +196,7 @@
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="/predict" class="btn-primary text-white px-8 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-3 group">
+                        <a href="/klasifikasi_email_spam/predict" class="btn-primary text-white px-8 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-3 group">
                             <span>Mulai Klasifikasi</span>
                             <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                         </a>
