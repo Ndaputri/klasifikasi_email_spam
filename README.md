@@ -1,7 +1,6 @@
 
-<html lang="id">
 <head>
-    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="_jo00WyAI6BfXSmxHbj_jza_4Ou1XwT_6rTYUeUFleo" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klasifikasi Email Spam Bahasa Indonesia - SVM</title>
     <script src="https://cdn.tailwindcss.com"></script>
